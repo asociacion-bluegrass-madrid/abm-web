@@ -1,0 +1,62 @@
+---
+// Phone navigation: one folder tab with the current section opens a side drawer with every section and the switches.
+// Hidden on desktop, where the row of tabs does this job.
+import logo from "../../brand/logos/web/abm-ink.svg?url";
+import logoCrema from "../../brand/logos/web/abm-cream.svg?url";
+import Ajustes from "./Ajustes.astro";
+import { pestanas, rutas, ui, type Lang, type Pestana } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+  activa: Pestana;
+  rutasIdioma: Record<Lang, string>;
+}
+const { lang, activa, rutasIdioma } = Astro.props;
+const t = ui[lang];
+---
+
+<div class="menu-pestana" transition:name="menu-pestana">
+  <button class="menu-abrir" type="button" aria-haspopup="dialog" aria-controls="menu">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+    <span>{t.pestanas[activa]}</span>
+  </button>
+</div>
+
+<dialog class="menu" id="menu" aria-label={t.menu.nombre}>
+  <div class="menu-panel" tabindex="-1" autofocus>
+    <div class="menu-cabeza">
+      <img class="logo-tinta" src={logo} alt={t.nombre} width="224" height="70" />
+      <img class="logo-crema" src={logoCrema} alt={t.nombre} width="224" height="70" />
+      <button class="menu-cerrar" type="button" aria-label={t.menu.cerrar}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+    </div>
+    <nav aria-label={t.menu.nombre}>
+      <ul>
+        {
+          pestanas.map((p) => (
+            <li>
+              <a href={rutas[p][lang]} aria-current={p === activa ? "page" : undefined}>{t.pestanas[p]}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <Ajustes lang={lang} rutasIdioma={rutasIdioma} />
+  </div>
+</dialog>
+
+<script>
+  // The panel fills the dialog, so a click that reaches the dialog itself came from the dimmed area.
+  function iniciar() {
+    const menu = document.querySelector<HTMLDialogElement>("dialog.menu");
+    if (!menu) return;
+    document.querySelector(".menu-abrir")?.addEventListener("click", () => menu.showModal());
+    menu.querySelector(".menu-cerrar")?.addEventListener("click", () => menu.close());
+    menu.addEventListener("click", (e) => {
+      const el = e.target as HTMLElement;
+      if (el === menu || el.closest("a")) menu.close();
+    });
+  }
+  document.addEventListener("astro:page-load", iniciar);
+</script>

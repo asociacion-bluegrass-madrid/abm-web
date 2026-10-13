@@ -1,0 +1,30 @@
+---
+// A news card: photo, title with its date underneath, and summary. The whole card links to the post.
+import { Image } from "astro:assets";
+import { rutas, ui, type Lang } from "../i18n/ui";
+import type { Noticia } from "../noticias";
+
+interface Props {
+  noticia: Noticia;
+  lang: Lang;
+  oculta?: boolean;
+}
+const { noticia, lang, oculta = false } = Astro.props;
+const t = ui[lang];
+const { datos } = noticia;
+const fecha = new Intl.DateTimeFormat(t.fecha, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(noticia.fecha);
+---
+
+<article class="ficha noticia" hidden={oculta} lang={noticia.enEspanol ? "es" : undefined}>
+  {
+    datos.foto && (
+      <div class="foto-ficha">
+        <Image src={datos.foto} alt="" widths={[480, 720]} sizes="(max-width: 900px) 92vw, 20rem" loading="lazy" />
+      </div>
+    )
+  }
+  <h3>{datos.titulo}</h3>
+  <time class="fecha" datetime={noticia.fecha.toISOString().slice(0, 10)}>{fecha}</time>
+  <p>{datos.resumen}</p>
+  <a class="ir" href={`${rutas.noticias[lang]}${noticia.slug}/`}>{t.noticias.leer} →</a>
+</article>

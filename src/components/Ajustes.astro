@@ -1,0 +1,23 @@
+---
+// Language and theme switches: the same capsule, and one tap anywhere on either flips it.
+import { languages, ui, type Lang } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+  // Where this same page lives in each language.
+  rutasIdioma: Record<Lang, string>;
+}
+const { lang, rutasIdioma } = Astro.props;
+const otro: Lang = lang === "es" ? "en" : "es";
+---
+
+<div class="ajustes">
+  <a class:list={["interruptor", "idioma", { derecha: lang === "en" }]} href={rutasIdioma[otro]} hreflang={otro} lang={otro} aria-label={languages[otro]}>
+    <span class:list={["opcion", { activa: lang === "es" }]} aria-hidden="true">ES</span>
+    <span class:list={["opcion", { activa: lang === "en" }]} aria-hidden="true">EN</span>
+  </a>
+  <button class="interruptor tema" type="button" role="switch" aria-checked="false" aria-label={ui[lang].temaOscuro}>
+    <span class="opcion sol"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" /></svg></span>
+    <span class="opcion luna"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z" /></svg></span>
+  </button>
+</div>

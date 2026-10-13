@@ -1,0 +1,21 @@
+---
+import Incrustacion from "../components/Incrustacion.astro";
+import TarjetaNoticia from "../components/TarjetaNoticia.astro";
+import { ui, type Lang } from "../i18n/ui";
+import { noticias } from "../noticias";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang].inicio;
+const ultimas = (await noticias(lang)).slice(0, 3);
+---
+
+<h1 class="titulo registro" data-texto={t.titulo}>{t.titulo}</h1>
+<p class="entrada">{t.entrada}</p>
+<Incrustacion />
+<h2 class="subtitulo-sec">{t.ultimas}</h2>
+<div class="fichas">
+  {ultimas.map((noticia) => <TarjetaNoticia noticia={noticia} lang={lang} />)}
+</div>

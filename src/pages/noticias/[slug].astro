@@ -1,0 +1,13 @@
+---
+import Sitio from "../../layouts/Sitio.astro";
+import Seccion from "../../secciones/Noticia.astro";
+import { noticias, paginaNoticia, type Noticia } from "../../noticias";
+
+export async function getStaticPaths() {
+  return (await noticias("es")).map((noticia) => ({ params: { slug: noticia.slug }, props: { noticia } }));
+}
+const { noticia } = Astro.props as { noticia: Noticia };
+const pagina = await paginaNoticia(noticia);
+---
+
+<Sitio lang="es" pestana="noticias" pagina={pagina}><Seccion lang="es" noticia={noticia} /></Sitio>

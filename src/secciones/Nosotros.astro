@@ -1,0 +1,20 @@
+---
+import { ui, type Lang } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const t = ui[Astro.props.lang].nosotros;
+---
+
+<h1 class="titulo registro" data-texto={t.titulo}>{t.titulo}</h1>
+<p class="subtitulo">{t.subtitulo}</p>
+<div class="dos">
+  <div>
+    {t.texto.map((p) => <p>{p}</p>)}
+  </div>
+  <figure class="copia">
+    <div class="marco"><img src="/fotos/slow-jam-nat-560.webp" alt="" width="560" height="700" loading="lazy" /></div>
+    <figcaption>{t.pie}</figcaption>
+  </figure>
+</div>

@@ -1,0 +1,22 @@
+---
+import { pestanas, rutas, ui, type Lang, type Pestana } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+  activa: Pestana;
+}
+const { lang, activa } = Astro.props;
+const t = ui[lang];
+---
+
+<nav class="pestanas" aria-label={lang === "es" ? "Secciones" : "Sections"} transition:name="pestanas">
+  <ul>
+    {
+      pestanas.map((p) => (
+        <li>
+          <a href={rutas[p][lang]} aria-current={p === activa ? "page" : undefined}>{t.pestanas[p]}</a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

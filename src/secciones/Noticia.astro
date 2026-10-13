@@ -1,0 +1,36 @@
+---
+import { Image } from "astro:assets";
+import { render } from "astro:content";
+import { rutas, ui, type Lang } from "../i18n/ui";
+import type { Noticia } from "../noticias";
+
+interface Props {
+  lang: Lang;
+  noticia: Noticia;
+}
+const { lang, noticia } = Astro.props;
+const t = ui[lang];
+const { datos } = noticia;
+const { Content } = await render(noticia.entrada);
+const fecha = new Intl.DateTimeFormat(t.fecha, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(noticia.fecha);
+---
+
+<a class="volver" href={rutas.noticias[lang]}>← {t.noticias.volver}</a>
+<article class="post" lang={noticia.enEspanol ? "es" : undefined}>
+  <h1 class="titulo registro" data-texto={datos.titulo}>{datos.titulo}</h1>
+  <time class="fecha-post" datetime={noticia.fecha.toISOString().slice(0, 10)}>{fecha}</time>
+  {noticia.enEspanol && <p class="aviso" lang="en">{t.noticias.soloEspanol}</p>}
+  {
+    datos.foto && (
+      <figure class="copia foto-post">
+        <div class="marco">
+          <Image src={datos.foto} alt={datos.pieFoto ?? ""} widths={[700, 1100, 1400]} sizes="(max-width: 900px) 92vw, 44rem" />
+        </div>
+        {datos.pieFoto && <figcaption>{datos.pieFoto}</figcaption>}
+      </figure>
+    )
+  }
+  <div class="cuerpo">
+    <Content />
+  </div>
+</article>

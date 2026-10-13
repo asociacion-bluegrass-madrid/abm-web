@@ -1,0 +1,39 @@
+---
+import TarjetaNoticia from "../components/TarjetaNoticia.astro";
+import { ui, type Lang } from "../i18n/ui";
+import { noticias } from "../noticias";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang].noticias;
+const lista = await noticias(lang);
+// Cards shown at first, and added by each press of the button.
+const TANDA = 3;
+---
+
+<h1 class="titulo registro" data-texto={t.titulo}>{t.titulo}</h1>
+<p class="subtitulo">{t.subtitulo}</p>
+<div class="fichas tablon">
+  {lista.map((noticia, i) => <TarjetaNoticia noticia={noticia} lang={lang} oculta={i >= TANDA} />)}
+</div>
+{lista.length > TANDA && <button class="mas" type="button" data-tanda={TANDA}>{t.mas}</button>}
+
+<script>
+  // "Show older news" reveals the next batch of hidden cards and goes away when none are left.
+  function iniciar() {
+    const boton = document.querySelector<HTMLButtonElement>("button.mas");
+    if (!boton) return;
+    const tanda = Number(boton.dataset.tanda);
+    boton.addEventListener("click", () => {
+      const ocultas = [...document.querySelectorAll<HTMLElement>(".tablon .ficha[hidden]")];
+      for (const ficha of ocultas.slice(0, tanda)) {
+        ficha.hidden = false;
+        ficha.classList.add("aparece");
+      }
+      if (ocultas.length <= tanda) boton.remove();
+    });
+  }
+  document.addEventListener("astro:page-load", iniciar);
+</script>

@@ -1,0 +1,43 @@
+---
+import Banjo from "../components/Banjo.astro";
+import { events } from "../data/events";
+import { ui, type Lang } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang].agenda;
+const hoy = new Date().toISOString().slice(0, 10);
+const proximas = events.filter((e) => e.date >= hoy).sort((a, b) => a.date.localeCompare(b.date));
+const dia = new Intl.DateTimeFormat(ui[lang].fecha, { day: "numeric", timeZone: "UTC" });
+const mes = new Intl.DateTimeFormat(ui[lang].fecha, { month: "short", timeZone: "UTC" });
+---
+
+<h1 class="titulo registro" data-texto={t.titulo}>{t.titulo}</h1>
+<ul class="citas">
+  <li class="cita">
+    <Banjo><span>{t.dia}</span><b>{t.fija.hora}</b></Banjo>
+    <div>
+      <p class="etiqueta">{t.cadaDomingo}</p>
+      <h3>{t.fija.titulo}</h3>
+      <p>{t.fija.donde}</p>
+    </div>
+  </li>
+  {
+    proximas.map((e) => {
+      const f = new Date(`${e.date}T12:00:00Z`);
+      return (
+        <li class="cita">
+          <Banjo><b>{dia.format(f)}</b><span>{mes.format(f)}</span></Banjo>
+          <div>
+            <p class="etiqueta">{e.time}</p>
+            <h3>{e.title[lang]}</h3>
+            <p>{e.mapUrl ? <a href={e.mapUrl}>{e.place}</a> : e.place}</p>
+          </div>
+        </li>
+      );
+    })
+  }
+</ul>
+{proximas.length === 0 && <p class="vacia citas">{t.vacia}</p>}

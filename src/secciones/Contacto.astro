@@ -1,0 +1,25 @@
+---
+import { CONTACT_EMAIL, ui, type Lang } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang].contacto;
+const pronto = lang === "es" ? "Pronto" : "Soon";
+---
+
+<h1 class="titulo registro" data-texto={t.titulo}>{t.titulo}</h1>
+<p class="subtitulo">{t.subtitulo}</p>
+<a class="correo" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+<div class="fichas" style="max-width:40rem;margin-left:auto;margin-right:auto">
+  {
+    [t.socio, t.donar].map((b) => (
+      <article class="ficha">
+        <span class="pronto">{pronto}</span>
+        <h3>{b.titulo}</h3>
+        <p>{b.texto}</p>
+      </article>
+    ))
+  }
+</div>

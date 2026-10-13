@@ -1,0 +1,339 @@
+/* Site styles: a leather folder (kraft or tabaco) with a paper sheet inside and tabs on top.
+   Textures are real scans blended over flat colours; the phone layout is the block at the end. */
+@font-face { font-family: "Chulapa"; src: url("../../brand/fonts/chulapa/Chulapa-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Chulapa"; src: url("../../brand/fonts/chulapa/Chulapa-Bold.otf") format("opentype"); font-weight: 700; font-display: swap; }
+
+:root {
+  --tinta: #2b1a10;
+  --tinta-suave: #5a4130;
+  --caoba: #6f3122;
+  --tabaco: #4b2a16;
+  --palosanto: #3a2118;
+  --madrono: #b23a26;
+  --kraft: #cfb48a;
+  --kraft-claro: #dcc6a0;
+  --hoja: #f2e9d6;
+  --ficha: #fbf6ea;
+  --linea: rgb(43 26 16 / 0.22);
+
+  /* The folder: kraft leather, with dark ink printed straight on it (header, tabs, footer) */
+  --fondo: var(--kraft);
+  --fondo-textura: url("/texturas/piel.webp");
+  --sobre: var(--tinta);
+  --sobre-suave: var(--tinta-suave);
+  --pestana: rgb(250 240 220 / 0.35);
+  --pestana-hover: rgb(250 240 220 / 0.6);
+
+  --f-titulo: "Chulapa", "Libre Franklin Variable", sans-serif;
+  --f-texto: "Libre Franklin Variable", "Libre Franklin", system-ui, sans-serif;
+  --f-serif: "Libre Caslon Text", Georgia, serif; /* italic only: subtitles, captions, links */
+}
+
+* { box-sizing: border-box; }
+/* 19px base: everything is sized in rem, so this scales the whole site. The page scrolls without a visible bar. */
+html { color-scheme: only light; font-size: 118.75%; background: var(--fondo) var(--fondo-textura); background-blend-mode: overlay; scrollbar-width: none; }
+html::-webkit-scrollbar { display: none; }
+
+/* Dark theme: the same leather in tabaco, with cream ink */
+:root[data-tema="oscuro"] {
+  --fondo: var(--tabaco);
+  --sobre: #f0e4c8;
+  --sobre-suave: #d6c29e;
+  --pestana: rgb(250 240 220 / 0.12);
+  --pestana-hover: rgb(250 240 220 / 0.24);
+}
+body {
+  margin: 0;
+  -webkit-user-select: none;
+  user-select: none;
+  min-height: 100vh;
+  color: var(--tinta);
+  font-family: var(--f-texto);
+  font-size: 1rem;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; }
+h1, h2, h3 { text-wrap: balance; }
+:focus-visible { outline: 3px solid var(--madrono); outline-offset: 3px; }
+/* Text can only be selected on the contact tab, to copy the email */
+.hoja[data-pestana="contacto"] { -webkit-user-select: text; user-select: text; }
+::selection { background: rgb(178 58 38 / 0.28); }
+@media (prefers-contrast: more), (forced-colors: active) {
+  html { background-image: none; }
+}
+
+/* Binding strips */
+.espiga {
+  height: 12px;
+  background:
+    linear-gradient(var(--tinta), var(--tinta)) top / 100% 2px no-repeat,
+    linear-gradient(var(--tinta), var(--tinta)) bottom / 100% 2px no-repeat,
+    repeating-linear-gradient(45deg, var(--tinta) 0 2px, var(--kraft-claro) 2px 4px) top / 100% 50% no-repeat,
+    repeating-linear-gradient(-45deg, var(--tinta) 0 2px, var(--kraft-claro) 2px 4px) bottom / 100% 50% no-repeat;
+}
+.ajedrez {
+  height: 6px;
+  background: repeating-conic-gradient(var(--tinta) 0 25%, var(--kraft-claro) 0 50%) 0 0 / 6px 6px;
+  box-shadow: 0 -2px 0 var(--tinta), 0 2px 0 var(--tinta);
+}
+
+/* Header */
+.cabecera { position: relative; text-align: center; padding: 1.6rem 1rem 1.1rem; }
+.cabecera .logo { display: inline-block; }
+.logo-crema { display: none; }
+:root[data-tema="oscuro"] .logo-tinta { display: none; }
+:root[data-tema="oscuro"] .logo-crema { display: block; }
+.cabecera .logo img { width: clamp(10.5rem, 20vw, 14rem); height: auto; }
+/* Header switches, language and theme: the same capsule, with the knob under the active option */
+.ajustes { position: absolute; top: 0.85rem; right: 1.25rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.45rem; }
+.interruptor {
+  --alto: 1.7rem;
+  --ancho: 3.3rem;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  width: var(--ancho);
+  height: var(--alto);
+  margin: 0;
+  padding: 2px;
+  border: 1px solid color-mix(in srgb, var(--sobre) 40%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sobre) 8%, transparent);
+  color: var(--sobre);
+  font: inherit;
+}
+.interruptor::before { content: ""; position: absolute; top: 2px; left: 2px; width: calc(var(--alto) - 6px); height: calc(var(--alto) - 6px); border-radius: 50%; background: var(--sobre); box-shadow: 0 1px 3px rgb(0 0 0 / 0.35); transition: translate 0.25s ease; }
+.interruptor.derecha::before, .tema[aria-checked="true"]::before { translate: calc(var(--ancho) - var(--alto)) 0; }
+.interruptor .opcion { position: relative; display: grid; place-items: center; width: calc(var(--alto) - 6px); height: calc(var(--alto) - 6px); border-radius: 50%; color: color-mix(in srgb, var(--sobre) 75%, transparent); text-decoration: none; font-family: var(--f-titulo); font-weight: 700; font-size: 0.64rem; letter-spacing: 0.04em; line-height: 1; transition: color 0.25s; }
+.interruptor .opcion.activa, .tema[aria-checked="false"] .sol, .tema[aria-checked="true"] .luna { color: var(--fondo); }
+.idioma { text-decoration: none; }
+.interruptor .opcion svg { width: 0.85rem; height: 0.85rem; }
+.tema, .idioma { cursor: pointer; }
+.tema:hover, .idioma:hover { background: color-mix(in srgb, var(--sobre) 16%, transparent); }
+.tema .sol svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.tema .luna svg { fill: currentColor; }
+@media (prefers-reduced-motion: reduce) { .interruptor::before, .interruptor .opcion { transition: none; } }
+
+/* Tabs: folder tabs sitting on the sheet */
+.pestanas { max-width: 60rem; width: 100%; margin: 0 auto; padding: 0 0.75rem; }
+.pestanas ul { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; gap: 0.3rem; overflow-x: auto; scrollbar-width: none; }
+.pestanas ul::-webkit-scrollbar { display: none; }
+.pestanas a {
+  display: block;
+  white-space: nowrap;
+  text-decoration: none;
+  font-family: var(--f-titulo);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem 0.5rem;
+  border: 1px solid var(--linea);
+  border-bottom: 0;
+  border-radius: 9px 9px 0 0;
+  background: var(--pestana);
+  color: var(--sobre-suave);
+  position: relative;
+  top: 1px;
+}
+.pestanas a:hover { background: var(--pestana-hover); color: var(--sobre); }
+.pestanas a[aria-current="page"] { background: var(--hoja); color: var(--tinta); border-color: rgb(43 26 16 / 0.35); z-index: 2; }
+
+/* The sheet */
+.hoja {
+  min-height: 32rem;
+  width: calc(100% - 1.5rem);
+  max-width: 60rem;
+  margin: 0 auto 1.75rem;
+  background: var(--hoja) url("/texturas/carton.webp");
+  background-blend-mode: overlay;
+  background-size: 512px;
+  border: 1px solid rgb(43 26 16 / 0.35);
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 22px 40px -28px rgb(43 26 16 / 0.7);
+  padding: 2.25rem clamp(1.1rem, 4vw, 3rem) 2.5rem;
+  text-align: center;
+}
+
+/* Section heading: letterpress title with an offset red print behind */
+.etiqueta { font-family: var(--f-titulo); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--caoba); margin: 0; }
+.titulo { font-family: var(--f-titulo); font-weight: 700; text-transform: uppercase; font-size: clamp(1.6rem, 3.4vw, 2.2rem); line-height: 1.05; margin: 0.35rem 0 0.3rem; }
+.registro { position: relative; isolation: isolate; display: inline-block; }
+.registro::before { content: attr(data-texto); position: absolute; inset: 0; color: var(--madrono); transform: translate(2px, 1.5px); z-index: -1; mix-blend-mode: multiply; }
+.subtitulo { font-family: var(--f-serif); font-style: italic; font-size: 1.08rem; margin: 0 auto; color: var(--tinta-suave); max-width: 36rem; }
+.entrada { font-size: 1.12rem; line-height: 1.55; max-width: 38rem; margin: 1rem auto 0; text-wrap: pretty; }
+
+.incrustacion { display: flex; align-items: center; gap: 0.9rem; justify-content: center; margin: 1.6rem auto; max-width: 22rem; color: var(--tinta); }
+.incrustacion::before, .incrustacion::after { content: ""; flex: 1; height: 1px; background: currentColor; opacity: 0.3; }
+.incrustacion svg { width: 2.1rem; height: 1rem; }
+
+/* Single-ink illustrations drawn with CSS masks so they take any colour */
+.ilus { display: inline-block; background: currentColor; -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat; }
+.ilus-oso { --src: url("/ilustraciones/oso.svg"); aspect-ratio: 960 / 1230; }
+.ilus-rosa { --src: url("/ilustraciones/rosa.svg"); aspect-ratio: 1000 / 1320; }
+.ilus-instagram { --src: url("/ilustraciones/redes/instagram.svg"); }
+.ilus-tiktok { --src: url("/ilustraciones/redes/tiktok.svg"); }
+.ilus-facebook { --src: url("/ilustraciones/redes/facebook.svg"); }
+
+/* Index cards (noticeboard, jams, contact) */
+.fichas { display: grid; gap: 1.1rem; margin-top: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(14.5rem, 1fr)); text-align: left; }
+.ficha { background: var(--ficha); border: 1px solid var(--linea); border-radius: 4px; padding: 1rem 1.15rem 1.1rem; display: flex; flex-direction: column; gap: 0.35rem; box-shadow: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 6px 14px -10px rgb(43 26 16 / 0.5); }
+.ficha .etiqueta { font-size: 0.65rem; }
+.ficha h3 { font-family: var(--f-titulo); font-weight: 700; text-transform: uppercase; font-size: 1.02rem; line-height: 1.15; margin: 0 0 0.35rem; padding-bottom: 0.4rem; border-bottom: 1.5px solid var(--madrono); }
+.ficha p { margin: 0; font-size: 0.95rem; color: var(--tinta-suave); }
+.ficha .ir { margin-top: auto; padding-top: 0.5rem; font-family: var(--f-serif); font-style: italic; text-decoration: none; color: var(--caoba); }
+.ficha .ir:hover { text-decoration: underline; }
+.ficha .foto-ficha { margin: -0.15rem 0 0.4rem; border: 5px solid #fff; box-shadow: 0 2px 6px rgb(43 26 16 / 0.25); aspect-ratio: 16 / 9; overflow: hidden; }
+.ficha .foto-ficha img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+
+/* News: cards link as a whole; the noticeboard reveals older posts in batches */
+.ficha[hidden] { display: none; }
+.noticia { position: relative; transition: transform 0.18s ease, box-shadow 0.18s ease; }
+.noticia:hover { transform: translateY(-2px); box-shadow: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 10px 20px -12px rgb(43 26 16 / 0.55); }
+.noticia .ir::after { content: ""; position: absolute; inset: 0; }
+/* The date sits under the title, above the red rule */
+.noticia h3 { border-bottom: 0; padding-bottom: 0; margin-bottom: 0; }
+.noticia .fecha { font-family: var(--f-serif); font-style: italic; font-size: 0.88rem; color: var(--tinta-suave); padding-bottom: 0.45rem; margin-bottom: 0.35rem; border-bottom: 1.5px solid var(--madrono); }
+.noticia.aparece { animation: aparece 0.35s ease-out; }
+@keyframes aparece { from { opacity: 0; transform: translateY(6px); } }
+.mas { display: block; margin: 1.6rem auto 0; padding: 0.7rem 1.4rem 0.6rem; border: 1px solid rgb(43 26 16 / 0.35); border-radius: 999px; background: var(--ficha); color: var(--tinta); font-family: var(--f-titulo); font-weight: 700; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; box-shadow: 0 6px 14px -10px rgb(43 26 16 / 0.5); }
+.mas:hover { color: var(--madrono); }
+
+/* A news post */
+.volver { display: block; text-align: left; font-family: var(--f-serif); font-style: italic; color: var(--caoba); text-decoration: none; margin-bottom: 1.2rem; }
+.volver:hover { text-decoration: underline; }
+.post { max-width: 40rem; margin: 0 auto; }
+.fecha-post { display: block; font-family: var(--f-serif); font-style: italic; font-size: 1.05rem; color: var(--tinta-suave); }
+.aviso { font-family: var(--f-serif); font-style: italic; color: var(--tinta-suave); margin: 0.6rem 0 0; }
+.post .foto-post { margin: 1.6rem auto 0; max-width: 40rem; }
+.foto-post .marco { transform: rotate(-0.6deg); }
+.cuerpo { text-align: left; margin-top: 1.6rem; }
+.cuerpo p { margin: 0 0 1rem; }
+.cuerpo a { color: var(--caoba); }
+.cuerpo h2, .cuerpo h3 { font-family: var(--f-titulo); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 1.02rem; margin: 1.6rem 0 0.5rem; }
+.cuerpo ul, .cuerpo ol { padding-left: 1.3rem; margin: 0 0 1rem; }
+.cuerpo img { margin: 1.2rem auto; border: 0.5rem solid #fff; box-shadow: 0 3px 10px rgb(43 26 16 / 0.28); }
+@media (prefers-reduced-motion: reduce) { .noticia, .noticia.aparece { transition: none; animation: none; } }
+
+/* About */
+.dos { display: grid; gap: 2rem; grid-template-columns: 1fr; align-items: start; text-align: left; margin-top: 1.6rem; }
+@media (min-width: 760px) { .dos { grid-template-columns: 1.35fr 1fr; } }
+.dos p { margin: 0 0 0.9rem; }
+.copia { margin: 0; }
+.dos .copia { max-width: 17rem; justify-self: center; }
+.copia .marco { background: #fff; padding: 0.55rem 0.55rem 0.4rem; box-shadow: 0 3px 10px rgb(43 26 16 / 0.28); transform: rotate(1.2deg); }
+.copia figcaption { font-family: var(--f-serif); font-style: italic; font-size: 0.85rem; color: var(--tinta-suave); padding-top: 0.35rem; }
+.subtitulo-sec { font-family: var(--f-titulo); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.85rem; margin: 1.2rem 0 0; }
+
+/* Jams */
+.jam .logo-jam { height: 7.5rem; display: grid; place-items: center; margin-bottom: 0.4rem; }
+.jam .logo-jam img { height: 7.5rem; width: auto; max-width: 100%; object-fit: contain; }
+.jam dl { margin: 0.4rem 0 0; font-size: 0.92rem; }
+.jam dt { font-family: var(--f-titulo); font-weight: 700; font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--caoba); margin-top: 0.4rem; }
+.jam dd { margin: 0; }
+.llegar { display: inline-flex; align-items: center; gap: 0.45rem; }
+.llegar .ilus-rosa { width: 1.1rem; color: var(--caoba); }
+
+/* Agenda */
+.citas { list-style: none; padding: 0; margin: 1.6rem auto 0; max-width: 36rem; display: grid; gap: 0.9rem; text-align: left; }
+.cita { display: grid; grid-template-columns: 5.5rem 1fr; gap: 1.1rem; align-items: center; background: var(--ficha); border: 1px solid var(--linea); border-radius: 4px; padding: 0.7rem 1rem 0.7rem 0.7rem; }
+.cita .banjo { width: 5.5rem; height: 5.5rem; }
+.cita .rotulo { font-size: 0.7rem; }
+.cita .rotulo b { display: block; font-size: 1.15rem; }
+.cita h3 { font-family: var(--f-titulo); font-weight: 700; text-transform: uppercase; font-size: 0.98rem; margin: 0.1rem 0; }
+.cita p { margin: 0; font-size: 0.9rem; color: var(--tinta-suave); }
+.vacia { font-family: var(--f-serif); font-style: italic; border: 1.5px dashed var(--linea); border-radius: 4px; padding: 1rem 1.25rem; color: var(--tinta-suave); text-align: center; }
+
+.banjo { position: relative; flex: none; }
+.banjo svg { width: 100%; height: 100%; display: block; }
+.banjo .rotulo { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; font-family: var(--f-titulo); font-weight: 700; color: var(--tinta); line-height: 1.05; text-transform: uppercase; }
+
+/* Gallery */
+.galeria { display: grid; gap: 1.6rem; grid-template-columns: repeat(auto-fit, minmax(12rem, 16rem)); justify-content: center; margin-top: 1.6rem; align-items: start; }
+.galeria .copia:nth-child(even) .marco { transform: rotate(-1.4deg); }
+.galeria a { display: block; cursor: zoom-in; }
+
+/* Photo viewer: the page stays visible behind a dimmed, blurred veil */
+.visor { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 4.5rem 6rem 2rem; border: 0; background: transparent; overflow: hidden; }
+.visor[open] { display: grid; place-items: center; animation: visor-entra 0.22s ease-out; }
+.visor::backdrop { background: rgb(28 16 9 / 0.7); backdrop-filter: blur(5px); }
+html:has(.visor[open]) { overflow: hidden; }
+.visor figure:focus { outline: none; }
+.visor figure { margin: 0; width: 100%; height: 100%; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.visor .marco { background: #fff; padding: 0.7rem 0.7rem 0.55rem; transform: rotate(-0.5deg); box-shadow: 0 24px 50px -18px rgb(0 0 0 / 0.75), 0 4px 12px rgb(43 26 16 / 0.35); }
+/* Width from the photo's own proportion, so the frame always hugs the image */
+.visor img { width: min(calc(100vw - 13.4rem), 60rem, calc((100dvh - 11rem) * var(--proporcion, 1.25))); height: auto; aspect-ratio: var(--proporcion, auto); }
+.visor figure { transition: opacity 0.16s ease; }
+.visor figure.cambiando { opacity: 0; }
+.visor figcaption { margin-top: 1rem; display: flex; gap: 0.9rem; align-items: baseline; color: #f0e4c8; font-family: var(--f-serif); font-style: italic; text-align: center; }
+.visor-cuenta { font-family: var(--f-titulo); font-style: normal; font-size: 0.7rem; letter-spacing: 0.16em; opacity: 0.7; }
+.visor-boton { position: fixed; display: grid; place-items: center; width: 3rem; height: 3rem; padding: 0; border-radius: 50%; border: 1px solid rgb(43 26 16 / 0.35); background: var(--ficha); color: var(--tinta); cursor: pointer; box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.7), 0 1px 0 rgb(255 255 255 / 0.6) inset; transition: background 0.15s, color 0.15s; }
+.visor-boton:hover { background: var(--hoja); color: var(--madrono); }
+.visor-boton svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.visor-anterior, .visor-siguiente { top: 50%; translate: 0 -50%; }
+.visor-anterior { left: 1.5rem; }
+.visor-siguiente { right: 1.5rem; }
+.visor-cerrar { top: 1.25rem; right: 1.5rem; width: 2.6rem; height: 2.6rem; }
+.visor.una .visor-anterior, .visor.una .visor-siguiente { display: none; }
+@keyframes visor-entra { from { opacity: 0; transform: scale(0.98); } }
+@media (max-width: 640px) {
+  .visor { padding: 4rem 1rem 5.5rem; }
+  .visor img { width: min(calc(100vw - 3.4rem), calc((100dvh - 13rem) * var(--proporcion, 1.25))); }
+  .visor-anterior, .visor-siguiente { top: auto; bottom: 1.25rem; translate: none; }
+  .visor-anterior { left: calc(50% - 3.6rem); }
+  .visor-siguiente { right: calc(50% - 3.6rem); }
+}
+@media (prefers-reduced-motion: reduce) { .visor[open] { animation: none; } .visor figure { transition: none; } }
+
+/* Contact */
+.correo { display: inline-block; margin-top: 1.1rem; font-size: clamp(1.05rem, 3vw, 1.4rem); font-weight: 500; color: var(--tinta); text-decoration: none; border-bottom: 1.5px solid var(--madrono); word-break: break-all; }
+.correo:hover { color: var(--caoba); }
+.pronto { align-self: flex-start; font-family: var(--f-titulo); font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--madrono); border: 1px solid currentColor; border-radius: 3px; padding: 0.05rem 0.4rem; }
+
+/* Footer */
+.pie { text-align: center; padding: 0 1rem 1.6rem; font-size: 0.75rem; color: var(--sobre-suave); }
+.pie .ajedrez { margin: 0 -1rem; }
+/* Social icons between the bear and the copyright, set off by rules and small diamonds */
+.redes { list-style: none; padding: 0; margin: 0.4rem auto 0.7rem; max-width: 19rem; display: flex; align-items: center; gap: 0.9rem; color: var(--sobre); }
+.redes::before, .redes::after { content: ""; flex: 1; height: 1px; background: currentColor; opacity: 0.35; }
+.redes li { display: flex; align-items: center; gap: 0.9rem; }
+.redes li + li::before { content: ""; width: 0.32rem; height: 0.32rem; border: 1px solid currentColor; transform: rotate(45deg); opacity: 0.6; }
+.redes .ilus { width: 1.15rem; aspect-ratio: 1; }
+.redes a.ilus:hover { color: var(--madrono); }
+.pie .ilus-oso { width: 2.4rem; color: var(--sobre); margin: 0.9rem auto 0.5rem; display: block; }
+.pie p { max-width: 42rem; margin: 0.3rem auto 0; }
+
+/* Phone layout (900px and below): the row of tabs and the header switches give way to one folder tab
+   that opens a side drawer with the sections and the switches. Nothing here applies on desktop. */
+.menu-pestana { display: none; }
+.menu { margin: 0; padding: 0; inset: 0 auto 0 0; width: min(84vw, 19rem); max-width: none; height: 100dvh; max-height: none; border: 0; border-right: 1px solid rgb(43 26 16 / 0.35); background: var(--fondo) var(--fondo-textura); background-blend-mode: overlay; color: var(--sobre); box-shadow: 14px 0 40px -14px rgb(0 0 0 / 0.65); }
+.menu::backdrop { background: rgb(28 16 9 / 0.5); backdrop-filter: blur(3px); }
+.menu[open] { animation: menu-entra 0.25s ease-out; }
+html:has(.menu[open]) { overflow: hidden; }
+@keyframes menu-entra { from { translate: -100% 0; } }
+.menu-panel { height: 100%; display: flex; flex-direction: column; gap: 1.4rem; padding: 1.1rem 1rem 1.4rem; }
+.menu-cabeza { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid color-mix(in srgb, var(--sobre) 25%, transparent); }
+.menu-cabeza img { width: 8.5rem; height: auto; }
+.menu-cerrar { display: grid; place-items: center; flex: none; width: 2.2rem; height: 2.2rem; padding: 0; border: 1px solid color-mix(in srgb, var(--sobre) 40%, transparent); border-radius: 50%; background: color-mix(in srgb, var(--sobre) 8%, transparent); color: var(--sobre); cursor: pointer; }
+.menu-cerrar svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.menu ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
+.menu nav a { display: block; padding: 0.8rem 1rem 0.7rem; border: 1px solid color-mix(in srgb, var(--sobre) 18%, transparent); border-radius: 6px; background: var(--pestana); color: var(--sobre); text-decoration: none; font-family: var(--f-titulo); font-weight: 700; font-size: 0.9rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.menu nav a[aria-current="page"] { background: var(--hoja); color: var(--tinta); border-color: rgb(43 26 16 / 0.35); box-shadow: inset 3px 0 0 var(--madrono); }
+.menu .ajustes { position: static; flex-direction: row; align-items: center; gap: 0.7rem; margin-top: auto; }
+/* Bigger switches in the drawer, sized for a finger */
+.menu .interruptor { --alto: 2.3rem; --ancho: 4.4rem; }
+.menu .interruptor .opcion { font-size: 0.8rem; }
+.menu .interruptor .opcion svg { width: 1.1rem; height: 1.1rem; }
+.menu-panel:focus { outline: none; }
+@media (prefers-reduced-motion: reduce) { .menu[open] { animation: none; } }
+
+@media (max-width: 900px) {
+  .cabecera > .ajustes, .pestanas { display: none; }
+  .menu-pestana { display: block; width: calc(100% - 1.5rem); max-width: 60rem; margin: 0 auto; }
+  .menu-abrir { position: relative; top: 1px; display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.6rem 1.05rem 0.5rem 0.85rem; border: 1px solid rgb(43 26 16 / 0.35); border-bottom: 0; border-radius: 9px 9px 0 0; background: var(--hoja); color: var(--tinta); font-family: var(--f-titulo); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+  .menu-abrir svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+  .hoja { border-radius: 0 6px 6px 6px; }
+}

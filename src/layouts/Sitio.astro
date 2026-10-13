@@ -1,0 +1,123 @@
+---
+import { ClientRouter } from "astro:transitions";
+import "@fontsource-variable/libre-franklin";
+import "@fontsource/libre-caslon-text/400-italic.css";
+import "../styles/sitio.css";
+import logo from "../../brand/logos/web/abm-ink.svg?url";
+import logoCrema from "../../brand/logos/web/abm-cream.svg?url";
+import Defs from "../components/Defs.astro";
+import Pestanas from "../components/Pestanas.astro";
+import Ajustes from "../components/Ajustes.astro";
+import MenuMovil from "../components/MenuMovil.astro";
+import { redes, rutas, ui, type Lang, type Pestana } from "../i18n/ui";
+import type { Pagina } from "../noticias";
+
+interface Props {
+  lang: Lang;
+  pestana: Pestana;
+  // A page inside a tab (a news post) brings its own title, summary, share image and URLs.
+  pagina?: Pagina;
+}
+const { lang, pestana, pagina } = Astro.props;
+const t = ui[lang];
+const titulo = pagina ? `${pagina.titulo} · ${t.nombre}` : pestana === "inicio" ? t.nombre : `${t.pestanas[pestana]} · ${t.nombre}`;
+const descripcion = pagina?.descripcion ?? t.descripcion;
+const rutasPagina = pagina?.rutas ?? rutas[pestana];
+// The preview stays out of search engines until launch; build with PUBLIC_INDEXAR=1 to allow indexing.
+const indexar = import.meta.env.PUBLIC_INDEXAR === "1";
+const url = new URL(rutasPagina[lang], Astro.site);
+const imagen = pagina?.imagen ?? { src: "/og.jpg", ancho: 1200, alto: 630 };
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <meta name="theme-color" content="#cfb48a" />
+    <!-- The site draws its own light and dark themes: keep browser "night modes" (Chromium auto-dark, Dark Reader) out -->
+    <meta name="color-scheme" content="only light" />
+    <meta name="darkreader-lock" />
+    {!indexar && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href={url} />
+    <link rel="alternate" hreflang="es" href={new URL(rutasPagina.es, Astro.site)} />
+    <link rel="alternate" hreflang="en" href={new URL(rutasPagina.en, Astro.site)} />
+    <meta property="og:type" content={pagina ? "article" : "website"} />
+    <meta property="og:site_name" content={t.nombre} />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={new URL(imagen.src, Astro.site)} />
+    <meta property="og:image:width" content={String(imagen.ancho)} />
+    <meta property="og:image:height" content={String(imagen.alto)} />
+    <meta property="og:image:alt" content={pagina?.titulo ?? t.nombre} />
+    <meta property="og:locale" content={lang === "es" ? "es_ES" : "en_GB"} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <ClientRouter />
+    <script is:inline>
+      // Light (kraft) by default; choosing dark (tabaco) lasts for the browser tab's session.
+      // Re-applied after each tab change, since the router replaces <html>'s attributes.
+      (() => {
+        const aplicar = () => {
+          let tema = null;
+          try { tema = sessionStorage.getItem("abm-tema"); } catch {}
+          const oscuro = tema === "oscuro";
+          if (oscuro) document.documentElement.dataset.tema = "oscuro";
+          else delete document.documentElement.dataset.tema;
+          document.querySelector('meta[name="theme-color"]')?.setAttribute("content", oscuro ? "#4b2a16" : "#cfb48a");
+          document.querySelectorAll(".tema").forEach((b) => b.setAttribute("aria-checked", String(oscuro)));
+        };
+        aplicar();
+        if (window.abmTema) return;
+        window.abmTema = true;
+        document.addEventListener("astro:after-swap", aplicar);
+        document.addEventListener("astro:page-load", aplicar);
+        document.addEventListener("click", (e) => {
+          // The language switch is a link: slide its knob at once, the router then loads the other language.
+          e.target.closest?.(".idioma")?.classList.toggle("derecha");
+          if (!e.target.closest?.(".tema")) return;
+          const oscuro = document.documentElement.dataset.tema !== "oscuro";
+          try { sessionStorage.setItem("abm-tema", oscuro ? "oscuro" : "claro"); } catch {}
+          aplicar();
+        });
+      })();
+    </script>
+  </head>
+  <body>
+    <Defs />
+    <div class="espiga" transition:name="espiga"></div>
+    <header class="cabecera" transition:name="cabecera">
+      <Ajustes lang={lang} rutasIdioma={rutasPagina} />
+      <a href={rutas.inicio[lang]} class="logo">
+        <img class="logo-crema" src={logoCrema} alt={t.nombre} width="224" height="70" />
+        <img class="logo-tinta" src={logo} alt={t.nombre} width="224" height="70" />
+      </a>
+    </header>
+    <Pestanas lang={lang} activa={pestana} />
+    <MenuMovil lang={lang} activa={pestana} rutasIdioma={rutasPagina} />
+    <main class="hoja" data-pestana={pestana} transition:name="hoja" transition:animate="fade">
+      <slot />
+    </main>
+    <footer class="pie" transition:name="pie">
+      <div class="ajedrez"></div>
+      <span class="ilus ilus-oso" aria-hidden="true"></span>
+      <ul class="redes" aria-label={t.pie.redes}>
+        {
+          redes.map((r) =>
+            r.url ? (
+              <li><a href={r.url} class={`ilus ilus-${r.id}`} aria-label={r.nombre} target="_blank" rel="noopener" /></li>
+            ) : (
+              <li><span class={`ilus ilus-${r.id}`} role="img" aria-label={r.nombre} /></li>
+            )
+          )
+        }
+      </ul>
+      <p>© 2026 {t.nombre}</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,127 @@
+---
+import { ui, type Lang } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const t = ui[Astro.props.lang].galeria;
+---
+
+<h1 class="titulo registro" data-texto={t.titulo}>{t.titulo}</h1>
+<p class="subtitulo">{t.subtitulo}</p>
+<div class="galeria">
+  {
+    t.fotos.map((f) => (
+      <figure class="copia">
+        <a class="marco" href={`/fotos/${f.src}-${f.ancho}.webp`} data-ancho={f.ancho} data-alto={f.alto}>
+          <img src={`/fotos/${f.src}-${f.mini}.webp`} alt={f.pie} width={f.mini} height={Math.round((f.alto * f.mini) / f.ancho)} loading="lazy" />
+        </a>
+        <figcaption>{f.pie}</figcaption>
+      </figure>
+    ))
+  }
+</div>
+
+<dialog class="visor" aria-label={t.visor.nombre}>
+  <figure tabindex="-1" autofocus>
+    <div class="marco"><img alt="" /></div>
+    <figcaption><span class="visor-pie"></span><span class="visor-cuenta"></span></figcaption>
+  </figure>
+  <button class="visor-boton visor-cerrar" type="button" aria-label={t.visor.cerrar}>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+  </button>
+  <button class="visor-boton visor-anterior" type="button" aria-label={t.visor.anterior}>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+  </button>
+  <button class="visor-boton visor-siguiente" type="button" aria-label={t.visor.siguiente}>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+  </button>
+</dialog>
+
+<script>
+  // Photo viewer over the page: arrows or keys to move; the dimmed area, the X or Esc close it.
+  function iniciar() {
+    const visor = document.querySelector<HTMLDialogElement>("dialog.visor");
+    if (!visor) return;
+    const fotos = [...document.querySelectorAll<HTMLAnchorElement>(".galeria a.marco")];
+    const figura = visor.querySelector("figure")!;
+    const img = visor.querySelector("img")!;
+    const pie = visor.querySelector(".visor-pie")!;
+    const cuenta = visor.querySelector(".visor-cuenta")!;
+    const sinMovimiento = matchMedia("(prefers-reduced-motion: reduce)");
+    const pausa = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+    // Full-size photos are downloaded and decoded off screen, so one only goes up once it can be painted whole.
+    const listas = new Set<string>();
+    const cargas = new Map<string, Promise<boolean>>();
+    const cargar = (src: string) => {
+      let carga = cargas.get(src);
+      if (!carga) {
+        const previa = new Image();
+        previa.src = src;
+        carga = previa.decode().then(() => (listas.add(src), true), () => false);
+        cargas.set(src, carga);
+      }
+      return carga;
+    };
+
+    const colocar = (a: HTMLAnchorElement, src: string) => {
+      // Size from the stored dimensions, never from the photo still on screen.
+      const ancho = Number(a.dataset.ancho);
+      const alto = Number(a.dataset.alto);
+      img.width = ancho;
+      img.height = alto;
+      img.style.setProperty("--proporcion", String(ancho / alto));
+      img.src = src;
+      img.alt = a.querySelector("img")?.alt ?? "";
+      pie.textContent = a.closest("figure")?.querySelector("figcaption")?.textContent ?? "";
+      cuenta.textContent = fotos.length > 1 ? `${actual + 1} / ${fotos.length}` : "";
+    };
+
+    let actual = 0;
+    let turno = 0;
+    // Moving between photos fades the current one out, swaps size, photo and caption while hidden, and fades back in.
+    // Opening shows the thumbnail (already loaded) at once and sharpens it when the full photo arrives.
+    const mostrar = async (i: number, fundido: boolean) => {
+      const mio = ++turno;
+      actual = (i + fotos.length) % fotos.length;
+      const a = fotos[actual];
+      const grande = a.href;
+      const carga = cargar(grande);
+      if (fundido) {
+        figura.classList.add("cambiando");
+        await Promise.race([Promise.all([carga, pausa(sinMovimiento.matches ? 0 : 160)]), pausa(600)]);
+        if (mio !== turno) return;
+      }
+      const mini = a.querySelector("img");
+      const provisional = mini?.complete && mini.naturalWidth ? mini.currentSrc : grande;
+      const lista = listas.has(grande);
+      colocar(a, lista ? grande : provisional);
+      figura.classList.remove("cambiando");
+      if (!lista) carga.then((ok) => ok && mio === turno && (img.src = grande));
+      cargar(fotos[(actual + 1) % fotos.length].href);
+      cargar(fotos[(actual - 1 + fotos.length) % fotos.length].href);
+    };
+
+    fotos.forEach((a, i) =>
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        mostrar(i, false);
+        visor.showModal();
+      }),
+    );
+    visor.classList.toggle("una", fotos.length < 2);
+    visor.querySelector(".visor-anterior")!.addEventListener("click", () => mostrar(actual - 1, true));
+    visor.querySelector(".visor-siguiente")!.addEventListener("click", () => mostrar(actual + 1, true));
+    visor.querySelector(".visor-cerrar")!.addEventListener("click", () => visor.close());
+    // The dialog covers the whole screen, so a click that misses the photo and the buttons lands on it.
+    visor.addEventListener("click", (e) => {
+      if (e.target === visor || e.target === figura) visor.close();
+    });
+    visor.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") mostrar(actual - 1, true);
+      if (e.key === "ArrowRight") mostrar(actual + 1, true);
+    });
+  }
+  document.addEventListener("astro:page-load", iniciar);
+</script>

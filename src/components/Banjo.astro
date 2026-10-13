@@ -1,0 +1,16 @@
+---
+// Banjo head seen from the front: resonator, nickel flange with 24 hooks, frosted head. Slot = what is painted on the head.
+const hooks = Array.from({ length: 24 }, (_, i) => i * 15);
+---
+
+<div class="banjo">
+  <svg viewBox="0 0 200 200" aria-hidden="true">
+    <circle cx="100" cy="100" r="99" fill="#6f3122" stroke="#2a170d" stroke-width="1.5" />
+    <circle cx="100" cy="100" r="91" fill="url(#niquel)" />
+    {hooks.map((a) => <rect x="98" y="7" width="4" height="13" rx="1.6" fill="#5f5b52" transform={`rotate(${a} 100 100)`} />)}
+    <circle cx="100" cy="100" r="81.5" fill="none" stroke="#8a867b" stroke-width="4" />
+    <circle cx="100" cy="100" r="79" fill="#eee4cc" />
+    <circle cx="100" cy="100" r="79" fill="#fff" filter="url(#escarcha)" clip-path="url(#parche-clip)" opacity="0.5" />
+  </svg>
+  <div class="rotulo"><slot /></div>
+</div>
