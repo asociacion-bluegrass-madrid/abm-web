@@ -7,6 +7,7 @@ const site =
 
 export default defineConfig({
   site,
+  base: '/abm-web', // remove this when using a custom domain
   i18n: {
     locales: ["es", "en"],
     defaultLocale: "es",
