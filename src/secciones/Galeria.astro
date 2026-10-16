@@ -13,8 +13,8 @@ const t = ui[Astro.props.lang].galeria;
   {
     t.fotos.map((f) => (
       <figure class="copia">
-        <a class="marco" href={`/fotos/${f.src}-${f.ancho}.webp`} data-ancho={f.ancho} data-alto={f.alto}>
-          <img src={`/fotos/${f.src}-${f.mini}.webp`} alt={f.pie} width={f.mini} height={Math.round((f.alto * f.mini) / f.ancho)} loading="lazy" />
+        <a class="marco" href={`${import.meta.env.BASE_URL}fotos/${f.src}-${f.ancho}.webp`} data-ancho={f.ancho} data-alto={f.alto}>
+          <img src={`${import.meta.env.BASE_URL}fotos/${f.src}-${f.mini}.webp`} alt={f.pie} width={f.mini} height={Math.round((f.alto * f.mini) / f.ancho)} loading="lazy" />
         </a>
         <figcaption>{f.pie}</figcaption>
       </figure>

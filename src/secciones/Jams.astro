@@ -13,7 +13,7 @@ const l = lang === "es" ? { cuando: "Cuándo", donde: "Dónde" } : { cuando: "Wh
 <p class="subtitulo">{t.subtitulo}</p>
 <div class="fichas">
   <article class="ficha jam">
-    <div class="logo-jam"><img src="/ilustraciones/americana-music-jam-madrid.webp" alt="" width="700" height="634" /></div>
+    <div class="logo-jam"><img src={`${import.meta.env.BASE_URL}ilustraciones/americana-music-jam-madrid.webp`} alt="" width="700" height="634" /></div>
     <h3>{t.collins.nombre}</h3>
     <p>{t.collins.texto}</p>
     <dl>
@@ -23,7 +23,7 @@ const l = lang === "es" ? { cuando: "Cuándo", donde: "Dónde" } : { cuando: "Wh
     <a class="ir llegar" href={MAPA_COLLINS} target="_blank" rel="noopener"><span class="ilus ilus-rosa" aria-hidden="true"></span>{t.llegar}</a>
   </article>
   <article class="ficha jam">
-    <div class="logo-jam"><img src="/ilustraciones/slow-jam-madrid.webp" alt="" width="483" height="326" /></div>
+    <div class="logo-jam"><img src={`${import.meta.env.BASE_URL}ilustraciones/slow-jam-madrid.webp`} alt="" width="483" height="326" /></div>
     <h3>{t.slow.nombre}</h3>
     <p>{t.slow.texto}</p>
     <dl>
