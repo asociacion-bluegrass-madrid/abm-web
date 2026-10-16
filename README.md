@@ -41,6 +41,19 @@ Railway compila la web con Railpack y la sirve con Caddy usando el `Caddyfile` d
 - `SITE_URL` (opcional): URL pública para Open Graph y `canonical`. Si falta, se usa `RAILWAY_PUBLIC_DOMAIN`.
 - `PUBLIC_INDEXAR=1`: quita el `noindex`. Se activa al lanzar.
 
+### GitHub Pages
+
+Cada push a `main` también publica la web en GitHub Pages mediante `.github/workflows/deploy.yml`. La URL es:
+
+```
+https://asociacion-bluegrass-madrid.github.io/abm-web
+```
+
+Para activarlo la primera vez: en la configuración del repositorio, ir a **Pages → Source** y seleccionar **GitHub Actions**.
+
+- `base: '/abm-web'` en `astro.config.mjs` es necesario porque la web se sirve desde una subruta. Si se configura un dominio propio, eliminar esa línea.
+- `public/robots.txt` bloquea los buscadores mientras el sitio no está listo. Cuando se quiera indexar, cambiar `Disallow: /` por `Allow: /`.
+
 ## Herramientas de imagen (`tools/`)
 
 Python 3 con `pip install -r tools/requirements.txt`.

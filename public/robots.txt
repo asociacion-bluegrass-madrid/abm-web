@@ -1,0 +1,3 @@
+# To allow search engines to index the site, change Disallow: / to Allow: /
+User-agent: *
+Disallow: /
