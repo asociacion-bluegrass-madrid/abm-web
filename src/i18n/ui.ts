@@ -15,14 +15,16 @@ export const redes: { id: string; nombre: string; url?: string }[] = [
 export const pestanas = ["inicio", "nosotros", "noticias", "jams", "agenda", "galeria", "contacto"] as const;
 export type Pestana = (typeof pestanas)[number];
 
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
 export const rutas: Record<Pestana, Record<Lang, string>> = {
-  inicio: { es: "/", en: "/en/" },
-  nosotros: { es: "/quienes-somos/", en: "/en/about/" },
-  noticias: { es: "/noticias/", en: "/en/news/" },
-  jams: { es: "/jams/", en: "/en/jams/" },
-  agenda: { es: "/agenda/", en: "/en/events/" },
-  galeria: { es: "/galeria/", en: "/en/gallery/" },
-  contacto: { es: "/contacto/", en: "/en/contact/" },
+  inicio: { es: `${base}/`, en: `${base}/en/` },
+  nosotros: { es: `${base}/quienes-somos/`, en: `${base}/en/about/` },
+  noticias: { es: `${base}/noticias/`, en: `${base}/en/news/` },
+  jams: { es: `${base}/jams/`, en: `${base}/en/jams/` },
+  agenda: { es: `${base}/agenda/`, en: `${base}/en/events/` },
+  galeria: { es: `${base}/galeria/`, en: `${base}/en/gallery/` },
+  contacto: { es: `${base}/contacto/`, en: `${base}/en/contact/` },
 };
 
 const es = {

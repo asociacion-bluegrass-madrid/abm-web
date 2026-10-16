@@ -41,9 +41,9 @@ const imagen = pagina?.imagen ?? { src: "/og.jpg", ancho: 1200, alto: 630 };
     <meta name="color-scheme" content="only light" />
     <meta name="darkreader-lock" />
     {!indexar && <meta name="robots" content="noindex, nofollow" />}
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.ico`} sizes="32x32" />
+    <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.svg`} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={`${import.meta.env.BASE_URL}apple-touch-icon.png`} />
     <link rel="canonical" href={url} />
     <link rel="alternate" hreflang="es" href={new URL(rutasPagina.es, Astro.site)} />
     <link rel="alternate" hreflang="en" href={new URL(rutasPagina.en, Astro.site)} />
